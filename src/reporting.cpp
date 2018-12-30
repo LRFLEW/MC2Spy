@@ -23,13 +23,13 @@
 #include <random>
 
 constexpr std::size_t max_mtu = 1400;
-constexpr boost::string_view alphanumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"_sv;
+constexpr std::string_view alphanumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"sv;
 
 static std::default_random_engine rng(std::random_device{}());
 template<std::size_t N>
 static std::array<std::uint8_t, N> random_printable() {
     std::array<std::uint8_t, N> arr;
-    std::uniform_int_distribution<> dist(0, alphanumeric.size() - 1);
+    std::uniform_int_distribution<std::size_t> dist(0, alphanumeric.size() - 1);
     std::generate(arr.begin(), arr.end(),
         [&dist]() -> std::uint8_t { return alphanumeric[dist(rng)]; });
     return arr;
@@ -79,18 +79,19 @@ void reportingcon::handle_challenge(read_buffer &read) {
 }
 
 void reportingcon::handle_heartbeat(read_buffer &read) {
+	// TODO: avoid string copies in converting string_view to string
     // server keys
-    for (boost::string_view key; !(key = read.string()).empty(); ) {
-        boost::string_view value = read.string();
+    for (std::string_view key; !(key = read.string()).empty(); ) {
+        std::string_view value = read.string();
         _serverkeys[std::string(key)] = std::string(value);
     }
-    if (_serverkeys["gamename"] != "mclub2pc"_sv) return;
-    if (_serverkeys["statechanged"] == "2"_sv) return;
+    if (_serverkeys["gamename"] != "mclub2pc"sv) return;
+    if (_serverkeys["statechanged"] == "2"sv) return;
 
     // player keys
     std::uint16_t player_count = read.le_uint16();
     std::vector<std::string> keys;
-    for (boost::string_view key; !(key = read.string()).empty(); ) {
+    for (std::string_view key; !(key = read.string()).empty(); ) {
         std::string skey(key);
         if (_playerkeys.count(skey)) return;
         keys.push_back(skey);
@@ -98,7 +99,7 @@ void reportingcon::handle_heartbeat(read_buffer &read) {
     }
     for (std::uint16_t i = 0; i < player_count; ++i) {
         for (const std::string &key : keys) {
-            _playerkeys.at(key)[i] = std::string(read.string());
+            _playerkeys.at(key)[i] = read.string();
         }
     }
 
@@ -132,7 +133,7 @@ reporting::reporting(asio::io_context &io_context) :
 
 void reporting::receive_one() {
     _socket.async_receive_from(_read.buf(max_mtu), _endpoint,
-        boost::bind(&reporting::handle_receive, this, phs::error, phs::bytes_transferred));
+        std::bind(&reporting::handle_receive, this, bind_error, bind_bytes_transferred));
 }
 
 void reporting::handle_receive(const error_code &error, std::size_t bytes_transferred) {
@@ -142,7 +143,7 @@ void reporting::handle_receive(const error_code &error, std::size_t bytes_transf
         if (_connections.count(_endpoint)) _connections.at(_endpoint).handle_packet(_read);
         else _connections.insert({ _endpoint, { *this, _endpoint } }).first->second.handle_packet(_read);
         if (_write.has_packet()) {
-            _socket.async_send_to(_write.buf(), _endpoint, boost::bind(&reporting::receive_one, this));
+            _socket.async_send_to(_write.buf(), _endpoint, std::bind(&reporting::receive_one, this));
             // wait for write to read another packet to keep contents of _write
         } else receive_one();
     } else receive_one();

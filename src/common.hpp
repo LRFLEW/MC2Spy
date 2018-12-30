@@ -20,22 +20,24 @@
 
 #include <array>
 #include <cstdint>
+#include <string_view>
 
 #include <boost/asio.hpp>
-#include <boost/bind.hpp>
 #include <boost/endian/arithmetic.hpp>
 #include <boost/functional/hash.hpp>
 #include <boost/system/error_code.hpp>
-#include <boost/utility/string_view.hpp>
 
 namespace asio = boost::asio;
 namespace endian = boost::endian;
-namespace phs = asio::placeholders;
 
 using asio::ip::tcp;
 using asio::ip::udp;
 using boost::system::error_code;
 
-constexpr boost::string_view operator "" _sv(const char *str, std::size_t len) {
-    return { str, len };
+using namespace std::placeholders;
+namespace {
+	auto &bind_error = _1;
+	auto &bind_bytes_transferred = _2;
 }
+
+using namespace std::string_view_literals;

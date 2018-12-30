@@ -22,7 +22,7 @@
 #include <random>
 #include <utility>
 
-constexpr boost::string_view game_key = "y6E3c9"_sv;
+constexpr std::string_view game_key = "y6E3c9"sv;
 
 static std::default_random_engine rng(std::random_device{}());
 
@@ -90,7 +90,7 @@ void slistenc::write(const void *data, std::size_t size) {
     _data.resize(off + size);
     const std::uint8_t *ptr = reinterpret_cast<const std::uint8_t *>(data);
     if (override_enc) std::copy_n(ptr, size, _data.begin() + off);
-    else std::transform(ptr, ptr + size, _data.begin() + off, boost::bind(&slistenc::enc, this, _1));
+    else std::transform(ptr, ptr + size, _data.begin() + off, std::bind(&slistenc::enc, this, _1));
 }
 
 std::uint8_t slistenc::enc(std::uint8_t v) {

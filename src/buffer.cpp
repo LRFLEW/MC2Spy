@@ -26,7 +26,7 @@ void write_buffer::write(const void *data, std::size_t size) {
     std::copy_n(reinterpret_cast<const std::uint8_t *>(data), size, _data.begin() + off);
 }
 
-boost::string_view read_buffer::string() {
+std::string_view read_buffer::string() {
     char *beg = reinterpret_cast<char *>(_buf.data()), *end = beg + _buf.size();
     char *ptr = std::find(beg, end, '\0');
     if (ptr == end) throw msg_bad_read();

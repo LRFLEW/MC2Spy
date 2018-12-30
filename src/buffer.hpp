@@ -46,7 +46,7 @@ public:
     void be_int32(std::int32_t v) { write<endian::big_int32_t>(v); }
     template<std::size_t N> void array(const std::array<std::uint8_t, N> &v)
     { return write<const std::array<std::uint8_t, N> &>(v); }
-    void string(boost::string_view v) { write(v.data(), v.size()); uint8(0); }
+    void string(std::string_view v) { write(v.data(), v.size()); uint8(0); }
 
 protected:
     // virtual to allow compression/encryption subclasses
@@ -78,7 +78,7 @@ public:
     std::int32_t be_int32() { return read<endian::big_int32_t>(); }
     template<std::size_t N> std::array<std::uint8_t, N> array()
     { return read<std::array<std::uint8_t, N>>(); }
-    boost::string_view string();
+    std::string_view string();
 
 protected:
     const void *read(std::size_t size);

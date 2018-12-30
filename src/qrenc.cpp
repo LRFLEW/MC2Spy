@@ -20,8 +20,8 @@
 
 #include <numeric>
 
-constexpr boost::string_view game_key = "y6E3c9"_sv;
-constexpr boost::string_view base64_key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"_sv;
+constexpr std::string_view game_key = "y6E3c9"sv;
+constexpr std::string_view base64_key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"sv;
 
 std::array<std::uint8_t, 28> challenge_enc(std::array<std::uint8_t, 20> challenge) {
     std::array<std::uint8_t, 28> result;
