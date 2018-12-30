@@ -31,7 +31,7 @@ void serverlistcon::recv_msg_len(const error_code &error) {
     try {
         if (error) return;
         std::uint16_t size = _read.be_uint16();
-		if (size <= 2) return;
+        if (size <= 2) return;
         asio::async_read(_socket, _read.buf(size - 2),
             std::bind(&serverlistcon::recv_msg, shared_from_this(), bind_error));
     } catch (const msg_bad_read &) { _socket.close(); }
@@ -74,9 +74,9 @@ bool serverlistcon::listRequest() {
     std::array<std::uint8_t, 8> clientkey = _read.array<8>();
     std::string_view filter = _read.string();
     //boost::string_view fields = _read.string();
-	std::string_view fields = R"(\hostname\gamemode\numplayers\maxplayers\city\type\hook\race\team\tod\weather\powerups\cars\haspass\protover)"sv;
-	expect(_read.string(), fields);
-	if (fields.empty() || fields[0] != '\\') return false;
+    std::string_view fields = R"(\hostname\gamemode\numplayers\maxplayers\city\type\hook\race\team\tod\weather\powerups\cars\haspass\protover)"sv;
+    expect(_read.string(), fields);
+    if (fields.empty() || fields[0] != '\\') return false;
     expect(_read.be_uint32(), 4); // options = PUSH_UPDATES
     if (!_read.finished()) return false;
 
@@ -95,48 +95,48 @@ bool serverlistcon::listRequest() {
     }
 
     // Test server to list
-	/*
-	_write.uint8(0b01010100);
-	_write.le_uint32(0x7F000001); // loopback address 127.0.0.1
-	_write.le_uint16(10000); // random port
-	_write.uint8(0xFF);
-	_write.string("Testing"sv);
-	_write.uint8(0xFF);
-	_write.string("openstaging"sv);
-	_write.uint8(0xFF);
-	_write.string("1"sv);
-	_write.uint8(0xFF);
-	_write.string("8"sv);
-	_write.uint8(0xFF);
-	_write.string("2"sv);
-	_write.uint8(0xFF);
-	_write.string("4"sv);
-	_write.uint8(0xFF);
-	_write.string("-1"sv);
-	_write.uint8(0xFF);
-	_write.string("-1"sv);
-	_write.uint8(0xFF);
-	_write.string("-1"sv);
-	_write.uint8(0xFF);
-	_write.string("1"sv);
-	_write.uint8(0xFF);
-	_write.string("0"sv);
-	_write.uint8(0xFF);
-	_write.string("0"sv);
-	_write.uint8(0xFF);
-	_write.string("0"sv);
-	_write.uint8(0xFF);
-	_write.string("0"sv);
-	_write.uint8(0xFF);
-	_write.string("34996503"sv);
-	 */
+    /*
+    _write.uint8(0b01010100);
+    _write.le_uint32(0x7F000001); // loopback address 127.0.0.1
+    _write.le_uint16(10000); // random port
+    _write.uint8(0xFF);
+    _write.string("Testing"sv);
+    _write.uint8(0xFF);
+    _write.string("openstaging"sv);
+    _write.uint8(0xFF);
+    _write.string("1"sv);
+    _write.uint8(0xFF);
+    _write.string("8"sv);
+    _write.uint8(0xFF);
+    _write.string("2"sv);
+    _write.uint8(0xFF);
+    _write.string("4"sv);
+    _write.uint8(0xFF);
+    _write.string("-1"sv);
+    _write.uint8(0xFF);
+    _write.string("-1"sv);
+    _write.uint8(0xFF);
+    _write.string("-1"sv);
+    _write.uint8(0xFF);
+    _write.string("1"sv);
+    _write.uint8(0xFF);
+    _write.string("0"sv);
+    _write.uint8(0xFF);
+    _write.string("0"sv);
+    _write.uint8(0xFF);
+    _write.string("0"sv);
+    _write.uint8(0xFF);
+    _write.string("0"sv);
+    _write.uint8(0xFF);
+    _write.string("34996503"sv);
+     */
 
     _write.uint8(0);
     _write.le_uint32(0xFFFFFFFF);
 
     // Push keys? None known for MC2 at least
-	// TODO: implement if necessary
-	// netcap doesn't match OpenSpy source
+    // TODO: implement if necessary
+    // netcap doesn't match OpenSpy source
 
     asio::async_write(_socket, _write.buf(), std::bind(&serverlistcon::write_msg, shared_from_this(), bind_error));
     return true;
@@ -150,7 +150,7 @@ serverlist::serverlist(asio::io_context &io_context) :
 
 void serverlist::accept_one() {
     auto connection = std::make_shared<serverlistcon>(_acceptor.get_executor().context());
-    _acceptor.async_accept(connection->socket(), 
+    _acceptor.async_accept(connection->socket(),
         std::bind(&serverlist::handle_accept, this, connection, bind_error));
 }
 

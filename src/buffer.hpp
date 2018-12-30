@@ -56,8 +56,6 @@ protected:
     std::vector<std::uint8_t> _data;
 };
 
-
-
 class read_buffer {
 public:
     asio::mutable_buffer buf(std::size_t size)

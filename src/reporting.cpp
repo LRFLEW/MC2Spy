@@ -79,7 +79,7 @@ void reportingcon::handle_challenge(read_buffer &read) {
 }
 
 void reportingcon::handle_heartbeat(read_buffer &read) {
-	// TODO: avoid string copies in converting string_view to string
+    // TODO: avoid string copies in converting string_view to string
     // server keys
     for (std::string_view key; !(key = read.string()).empty(); ) {
         std::string_view value = read.string();
@@ -126,7 +126,7 @@ void reportingcon::handle_keepalive(read_buffer &read) {
     write.finish();
 }
 
-reporting::reporting(asio::io_context &io_context) : 
+reporting::reporting(asio::io_context &io_context) :
     _socket(io_context, udp::endpoint(udp::v4(), 27900)) {
     receive_one();
 }

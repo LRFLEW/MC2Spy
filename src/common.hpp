@@ -35,9 +35,7 @@ using asio::ip::udp;
 using boost::system::error_code;
 
 using namespace std::placeholders;
-namespace {
-	auto &bind_error = _1;
-	auto &bind_bytes_transferred = _2;
-}
+inline auto &bind_error = _1;
+inline auto &bind_bytes_transferred = _2;
 
 using namespace std::string_view_literals;
